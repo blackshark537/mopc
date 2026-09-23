@@ -1,0 +1,35 @@
+# ==============================================================================
+# .gitignore - MOPC La Vega Dashboard
+# ==============================================================================
+
+# Archivos de datos crudos y documentos fuente
+*.pdf
+imagenes.json
+obras_civiles.json
+obras_en_ejecucion.csv
+obras_terminadas.csv
+data/
+
+# Enlace simbólico redundante
+imagenes
+imagenes/
+
+# Archivos del sistema operativo (macOS / Windows)
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editores y entornos de desarrollo
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs y temporales
+*.log
+*.tmp
+.cache/

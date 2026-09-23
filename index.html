@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Dashboard moderno de seguimiento y control de las obras públicas e infraestructura en la provincia de La Vega, República Dominicana. Ministerio de Obras Públicas y Comunicaciones (MOPC).">
+    <meta name="keywords"
+        content="MOPC, La Vega, Obras Públicas, República Dominicana, Infraestructura, Carreteras, Puentes, Asfaltado">
+    <meta name="author" content="Ministerio de Obras Públicas y Comunicaciones (MOPC)">
+    <title>Portal de Obras Públicas — Provincia La Vega | MOPC República Dominicana</title>
+
+    <!-- Google Fonts: Outfit & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Favicons & Government App Icons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="favicons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicons/favicon-16x16.png">
+    <link rel="shortcut icon" href="favicons/favicon.ico">
+    <meta name="msapplication-TileImage" content="favicons/android-chrome-192x192.png">
+
+    <!-- Leaflet Map CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+    <!-- Application Stylesheets -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+
+<body>
+
+    <!-- Top Government Institutional Bar -->
+    <header class="gov-top-bar" role="banner">
+        <div class="container">
+            <div class="gov-badge-wrap">
+                <img src="favicons/favicon-32x32.png" alt="Escudo / Logo Gobierno" class="top-bar-gov-logo"
+                    style="width: 16px; height: 16px; object-fit: contain; vertical-align: middle;">
+                <span>Gobierno de la República Dominicana &bull; Ministerio de Obras Públicas y Comunicaciones
+                    (MOPC)</span>
+            </div>
+            <div class="gov-period-wrap">
+                <span>Período Oficial: <strong id="headerPeriod">Enero 2025 / 1er. Trimestre 2025</strong></span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Navigation Header -->
+    <div class="header-main">
+        <div class="container">
+            <div class="header-content">
+                <div class="brand-section">
+                    <div class="mopc-logo-badge" title="Gobierno de la República Dominicana • MOPC">
+                        <img src="favicons/apple-touch-icon.png" alt="Logo Institucional Gobierno Dominicano"
+                            class="gov-logo-img">
+                    </div>
+                    <div class="brand-titles">
+                        <h1>Infraestructura y Obras Públicas</h1>
+                        <div class="brand-subtitle">
+                            <span class="provincia-tag">Provincia La Vega</span>
+                            <span>&bull;</span>
+                            <span>Seguimiento de Inversión y Avance Físico</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="header-actions">
+                    <button type="button" class="btn btn-secondary btn-sm" id="btnOpenCivilesModal">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path
+                                d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
+                            </path>
+                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                        </svg>
+                        Obras Civiles y Asfalto
+                    </button>
+                    <button type="button" class="btn btn-primary btn-sm" id="btnPrintReport">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                            <rect x="6" y="14" width="12" height="8"></rect>
+                        </svg>
+                        Imprimir Ficha
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Navigation Sub-Bar -->
+    <nav class="nav-sub-bar" aria-label="Navegación de secciones">
+        <div class="container">
+            <a href="#kpisSection" class="nav-link active" data-target="kpisSection">Resumen de Inversión</a>
+            <a href="#chartsSection" class="nav-link" data-target="chartsSection">Gráficos Analíticos</a>
+            <a href="#mapSection" class="nav-link" data-target="mapSection">Mapa Georreferenciado</a>
+            <a href="#tableSection" class="nav-link" data-target="tableSection">Catálogo de Obras</a>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <main class="dashboard-main container">
+
+        <!-- Global Provincial Investment Banner -->
+        <section class="gran-total-banner" aria-label="Resumen total de inversión provincial">
+            <div class="gran-total-info">
+                <h2>Inversión Pública Consolidada &bull; MOPC en La Vega</h2>
+                <div class="gran-total-amount" id="kpiGranTotal">RD$ 7.92 B</div>
+                <div class="gran-total-sub" id="kpiGranTotalSub">RD$ 7,915,094,031.61 monto total acumulado</div>
+            </div>
+            <div class="gran-total-pills">
+                <div class="summary-pill">
+                    <span class="pill-label">Proyectos Viales</span>
+                    <span class="pill-val">47 Obras</span>
+                </div>
+                <div class="summary-pill">
+                    <span class="pill-label">Asfalto Provincial</span>
+                    <span class="pill-val">262.2 km</span>
+                </div>
+                <div class="summary-pill">
+                    <span class="pill-label">Sectores Intervenidos</span>
+                    <span class="pill-val">129 Sectores</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Primary KPIs Grid -->
+        <section id="kpisSection" aria-label="Indicadores Clave de Desempeño">
+            <div class="kpis-grid">
+                <!-- Total Obras -->
+                <div class="kpi-card">
+                    <div class="kpi-top">
+                        <span class="kpi-title">Total de Obras</span>
+                        <div class="kpi-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.2">
+                                <rect x="3" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="14" width="7" height="7"></rect>
+                                <rect x="3" y="14" width="7" height="7"></rect>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="kpi-value" id="kpiTotalObras">47</div>
+                    <div class="kpi-sub">
+                        <span id="kpiTotalObrasSub">100% de la cartera provincial</span>
+                        <span class="badge badge-neutral">MOPC</span>
+                    </div>
+                </div>
+
+                <!-- Obras Terminadas -->
+                <div class="kpi-card kpi-terminadas">
+                    <div class="kpi-top">
+                        <span class="kpi-title">Obras Terminadas</span>
+                        <div class="kpi-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="kpi-value" id="kpiTerminadas">34</div>
+                    <div class="kpi-progress-wrap">
+                        <div class="kpi-progress-bar" id="kpiBarTerminadas" style="width: 72.3%;"></div>
+                    </div>
+                    <div class="kpi-sub">
+                        <span>Porcentaje de finalización:</span>
+                        <strong id="kpiPctTerminadas">72.3%</strong>
+                    </div>
+                </div>
+
+                <!-- Obras en Ejecución -->
+                <div class="kpi-card kpi-ejecucion">
+                    <div class="kpi-top">
+                        <span class="kpi-title">Obras en Ejecución</span>
+                        <div class="kpi-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="kpi-value" id="kpiEjecucion">13</div>
+                    <div class="kpi-progress-wrap">
+                        <div class="kpi-progress-bar" id="kpiBarEjecucion" style="width: 27.7%;"></div>
+                    </div>
+                    <div class="kpi-sub">
+                        <span>En desarrollo activo:</span>
+                        <strong id="kpiPctEjecucion">27.7%</strong>
+                    </div>
+                </div>
+
+                <!-- Inversión Contratada en Obras -->
+                <div class="kpi-card kpi-inversion">
+                    <div class="kpi-top">
+                        <span class="kpi-title">Inversión en Obras</span>
+                        <div class="kpi-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.2">
+                                <line x1="12" y1="1" x2="12" y2="23"></line>
+                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="kpi-value" id="kpiInvTotal">RD$ 5.62 B</div>
+                    <div class="kpi-sub">
+                        <span>Terminadas: <strong id="kpiInvTerminadasSub">RD$ 2.22 B</strong></span>
+                        <span>Ejecución: <strong id="kpiInvEjecucionSub">RD$ 3.40 B</strong></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Secondary KPIs: Programas Especiales (Obras Civiles) -->
+            <div class="kpis-secondary-grid">
+                <div class="kpi-civiles-card" id="kpiCivilesCard" title="Ver detalles del Plan de Asfalto">
+                    <div class="civ-icon-box">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M3 21h18"></path>
+                            <path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"></path>
+                        </svg>
+                    </div>
+                    <div class="civ-content">
+                        <h4>Asfalto Colocado</h4>
+                        <div class="civ-val" id="kpiAsfaltoKm">262.21 km</div>
+                        <div class="civ-sub"><span id="kpiAsfaltoM2">1,468,976.69 m²</span> en <span
+                                id="kpiAsfaltoSectores">129 sectores</span> (RD$ 2,249.8M)</div>
+                    </div>
+                </div>
+
+                <div class="kpi-civiles-card" onclick="window.MOPCModal.openCiviles()"
+                    title="Ver detalles de Aceras y Contenes">
+                    <div class="civ-icon-box">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                        </svg>
+                    </div>
+                    <div class="civ-content">
+                        <h4>Aceras y Contenes</h4>
+                        <div class="civ-val" id="kpiAcerasKm">19.9 KM</div>
+                        <div class="civ-sub">21,372 m² aceras y 19,912 ml contenes (RD$ 41.57M)</div>
+                    </div>
+                </div>
+
+                <div class="kpi-civiles-card" onclick="window.MOPCModal.openCiviles()" title="Ver asfalto programado">
+                    <div class="civ-icon-box">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M12 2v20"></path>
+                            <path d="m17 5-5-3-5 3"></path>
+                            <path d="m17 19-5 3-5-3"></path>
+                        </svg>
+                    </div>
+                    <div class="civ-content">
+                        <h4>Asfalto Programado 2025</h4>
+                        <div class="civ-val">21.50 km</div>
+                        <div class="civ-sub">1er Trimestre: 4 sectores (Las Guaranitas, Mirador, Don Juan, Centro)</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Filters Section -->
+        <section class="filter-card" aria-label="Filtros del dashboard">
+            <div class="filter-controls-grid">
+                <!-- Search by name or locality -->
+                <div class="filter-group">
+                    <label for="filterSearch" class="filter-label">Buscar Obra o Sector</label>
+                    <div class="search-input-wrap">
+                        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input type="text" id="filterSearch" class="form-input"
+                            placeholder="Ej: Pontón, Jarabacoa, Camú, Soto...">
+                    </div>
+                </div>
+
+                <!-- Municipality -->
+                <div class="filter-group">
+                    <label for="filterMunicipio" class="filter-label">Municipio</label>
+                    <select id="filterMunicipio" class="form-select">
+                        <option value="todos">Todos los municipios</option>
+                    </select>
+                </div>
+
+                <!-- Status -->
+                <div class="filter-group">
+                    <label for="filterEstado" class="filter-label">Estado de Obra</label>
+                    <select id="filterEstado" class="form-select">
+                        <option value="todos">Todos los estados</option>
+                        <option value="Terminada">Terminadas</option>
+                        <option value="En Ejecución">En Ejecución</option>
+                    </select>
+                </div>
+
+                <!-- Work Category -->
+                <div class="filter-group">
+                    <label for="filterTipo" class="filter-label">Tipo de Infraestructura</label>
+                    <select id="filterTipo" class="form-select">
+                        <option value="todos">Todos los tipos</option>
+                    </select>
+                </div>
+
+                <!-- Budget Range -->
+                <div class="filter-group">
+                    <label for="filterInversion" class="filter-label">Rango Presupuesto</label>
+                    <select id="filterInversion" class="form-select">
+                        <option value="todos">Cualquier monto</option>
+                        <option value="top-100m">&gt; RD$ 100M</option>
+                        <option value="mid-20-100m">RD$ 20M &ndash; RD$ 100M</option>
+                        <option value="low-20m">&lt; RD$ 20M</option>
+                        <option value="sin-desglose">Sin desglose individual</option>
+                    </select>
+                </div>
+
+                <!-- Reset Button -->
+                <div class="filter-group">
+                    <label class="filter-label">&nbsp;</label>
+                    <button type="button" class="btn btn-secondary" id="btnResetFilters"
+                        title="Restablecer todos los filtros">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.2">
+                            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                            <path d="M3 3v5h5"></path>
+                        </svg>
+                        Limpiar
+                    </button>
+                </div>
+            </div>
+
+            <!-- Secondary filter toggles -->
+            <div style="margin-top: 14px; display: flex; align-items: center; justify-content: space-between;">
+                <label class="filter-checkbox-wrap">
+                    <input type="checkbox" id="filterSoloFotos">
+                    <span>Mostrar solo obras con registro fotográfico oficial (8 proyectos clave)</span>
+                </label>
+            </div>
+
+            <!-- Active Filter Badges / Chips -->
+            <div class="active-filters-banner hidden" id="activeFilterBanner">
+                <div class="active-filters-list" id="activeFiltersList"></div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span class="badge badge-primary" id="activeResultsCount">Mostrando 47 obras</span>
+                    <button type="button" class="btn btn-outline btn-sm" id="btnBannerReset">Restablecer todo</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Visualizations Section: Interactive Charts -->
+        <section id="chartsSection" class="charts-section" aria-label="Visualización de Gráficos Analíticos">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.2">
+                            <line x1="18" y1="20" x2="18" y2="10"></line>
+                            <line x1="12" y1="20" x2="12" y2="4"></line>
+                            <line x1="6" y1="20" x2="6" y2="14"></line>
+                        </svg>
+                        Análisis Gráfico de Infraestructura
+                    </h2>
+                    <p class="section-desc">Distribución por estado físico, territorio municipal, tipología vial y
+                        proyectos de mayor cuantía presupuestaria.</p>
+                </div>
+            </div>
+
+            <div class="charts-grid">
+                <!-- Chart 1: Estado de las Obras (Donut) -->
+                <div class="chart-card">
+                    <div class="chart-card-header">
+                        <h3 class="chart-card-title">Estado de Avance de las Obras</h3>
+                        <div class="chart-actions-toggle">
+                            <button type="button" class="toggle-btn active" id="btnChartEstadoCount">Por
+                                Cantidad</button>
+                            <button type="button" class="toggle-btn" id="btnChartEstadoInv">Por Monto (RD$)</button>
+                        </div>
+                    </div>
+                    <div class="chart-canvas-wrap">
+                        <canvas id="chartEstadoCanvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Chart 2: Inversión por Municipio (Horizontal Bar) -->
+                <div class="chart-card">
+                    <div class="chart-card-header">
+                        <h3 class="chart-card-title">Inversión por Municipio (Millones RD$)</h3>
+                    </div>
+                    <div class="chart-canvas-wrap">
+                        <canvas id="chartMunicipioCanvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Chart 3: Distribución por Tipo de Infraestructura -->
+                <div class="chart-card">
+                    <div class="chart-card-header">
+                        <h3 class="chart-card-title">Obras por Categoría de Infraestructura</h3>
+                    </div>
+                    <div class="chart-canvas-wrap">
+                        <canvas id="chartTipoCanvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Chart 4: Top Obras de Mayor Inversión -->
+                <div class="chart-card">
+                    <div class="chart-card-header">
+                        <h3 class="chart-card-title">Top Proyectos de Mayor Inversión (RD$)</h3>
+                    </div>
+                    <div class="chart-canvas-wrap">
+                        <canvas id="chartTopCanvas"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Map Section -->
+        <section id="mapSection" class="map-section-card" aria-label="Mapa interactivo de obras georreferenciadas">
+            <div class="map-header">
+                <div>
+                    <h2 class="section-title">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.2">
+                            <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
+                            <line x1="8" y1="2" x2="8" y2="18"></line>
+                            <line x1="16" y1="6" x2="16" y2="22"></line>
+                        </svg>
+                        Georreferenciación de Obras Oficiales en La Vega
+                    </h2>
+                    <p class="section-desc">Visualice los proyectos con coordenadas satelitales verificadas en la fuente
+                        documental del MOPC.</p>
+                </div>
+                <div>
+                    <span class="map-notice-badge" id="mapNotice">
+                        Mostrando obras georreferenciadas de fuentes oficiales MOPC.
+                    </span>
+                </div>
+            </div>
+
+            <!-- Leaflet Container -->
+            <div id="mapContainer" class="map-container"></div>
+        </section>
+
+        <!-- Public Works Catalog Table Section -->
+        <section id="tableSection" class="table-section-card" aria-label="Catálogo detallado de obras">
+            <div class="table-header-bar">
+                <div>
+                    <h2 class="section-title">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.2">
+                            <line x1="8" y1="6" x2="21" y2="6"></line>
+                            <line x1="8" y1="12" x2="21" y2="12"></line>
+                            <line x1="8" y1="18" x2="21" y2="18"></line>
+                            <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                            <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                            <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                        </svg>
+                        Catálogo de Obras Públicas de La Vega
+                    </h2>
+                    <p class="section-desc">Haga clic en cualquier fila para inspeccionar la ficha técnica completa del
+                        proyecto.</p>
+                </div>
+                <div class="table-controls">
+                    <div class="per-page-wrap">
+                        <label for="tablePerPage">Mostrar:</label>
+                        <select id="tablePerPage" class="form-select"
+                            style="width: auto; height: 36px; padding: 4px 8px;">
+                            <option value="10">10 obras</option>
+                            <option value="25">25 obras</option>
+                            <option value="50">50 obras</option>
+                            <option value="all">Todas</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="table-responsive-wrap">
+                <table class="mopc-table" id="obrasTable"
+                    summary="Listado de obras públicas en la provincia de La Vega">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="col-foto">Foto</th>
+                            <th scope="col" class="col-codigo" data-sort="codigo">Código</th>
+                            <th scope="col" class="col-nombre" data-sort="nombre">Nombre de la Obra</th>
+                            <th scope="col" class="col-municipio" data-sort="municipio">Municipio</th>
+                            <th scope="col" class="col-tipo" data-sort="tipo">Categoría</th>
+                            <th scope="col" class="col-estado" data-sort="estado">Estado</th>
+                            <th scope="col" class="col-inversion" data-sort="inversion">Presupuesto / Inversión</th>
+                            <th scope="col" class="col-acciones">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="obrasTableBody">
+                        <!-- Rendered dynamically by js/table.js -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Empty State Container -->
+            <div id="tableEmptyState" class="empty-state-box hidden">
+                <div class="empty-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="1.5">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        <line x1="8" y1="11" x2="14" y2="11"></line>
+                    </svg>
+                </div>
+                <h3>No se encontraron obras</h3>
+                <p>Ningún proyecto coincide con los criterios de búsqueda y filtros seleccionados.</p>
+                <button type="button" class="btn btn-primary btn-sm" onclick="window.MOPCFilters.resetFilters()">
+                    Restablecer Filtros
+                </button>
+            </div>
+
+            <!-- Table Footer & Pagination Controls -->
+            <div class="table-footer-bar">
+                <span class="table-info-text" id="tableInfoText">Mostrando 1 a 10 de 47 obras</span>
+                <nav class="pagination-controls" id="tablePagination" aria-label="Paginación de obras"></nav>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal: Project Sheet (Ficha Técnica) -->
+    <dialog id="projectModal" class="mopc-modal" aria-labelledby="modalObraTitle">
+        <div class="modal-inner">
+            <div class="modal-header">
+                <div class="modal-header-info">
+                    <div class="modal-top-meta">
+                        <span class="code-pill" id="modalObraCode">LV-T01</span>
+                        <span class="badge" id="modalObraStatus">Terminada</span>
+                        <span class="badge badge-neutral" id="modalObraTipo">Infraestructura Vial</span>
+                    </div>
+                    <h3 class="modal-title" id="modalObraTitle">Título de la Obra</h3>
+                </div>
+                <button type="button" class="btn-close-modal" aria-label="Cerrar modal">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                <!-- Photo Gallery Viewer -->
+                <div id="modalGalleryWrap"></div>
+
+                <!-- Investment and Metadata Grid -->
+                <div class="modal-metrics-grid">
+                    <div class="modal-inv-banner">
+                        <span class="modal-inv-label">Inversión Oficial Contratada</span>
+                        <div class="modal-inv-val" id="modalObraInv">RD$ 0.00</div>
+                        <div class="modal-inv-sub" id="modalObraInvSub">Monto oficial reportado por el MOPC</div>
+                    </div>
+
+                    <div class="modal-meta-card">
+                        <div class="meta-row">
+                            <span class="meta-lbl">Municipio:</span>
+                            <span class="meta-val" id="modalObraMun">La Vega</span>
+                        </div>
+                        <div class="meta-row">
+                            <span class="meta-lbl">Localidad / Sector:</span>
+                            <span class="meta-val" id="modalObraLoc">El Pontón</span>
+                        </div>
+                        <div class="meta-row">
+                            <span class="meta-lbl">Fuente Oficial:</span>
+                            <span class="meta-val" id="modalObraFuente">MOPC Enero 2025</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GPS & Geolocation Box -->
+                <div id="modalGpsSection"></div>
+            </div>
+
+            <div class="modal-footer">
+                <span class="fuente-footer">Datos validados según informe de ejecución presupuestaria MOPC (Enero
+                    2025).</span>
+                <div class="modal-footer-btns">
+                    <!-- <button type="button" class="btn btn-outline btn-sm" onclick="window.MOPCModal.printCurrent()">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                        Imprimir Ficha
+                    </button> -->
+                    <button type="button" class="btn btn-secondary btn-sm btn-close-modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </dialog>
+
+    <!-- Modal: Programas Especiales (Obras Civiles) -->
+    <dialog id="civilesModal" class="mopc-modal" aria-labelledby="civilesModalTitle">
+        <div class="modal-inner">
+            <div class="modal-header">
+                <div>
+                    <span class="badge badge-primary">Programas Complementarios</span>
+                    <h3 class="modal-title" id="civilesModalTitle" style="margin-top: 4px;">Obras Civiles, Asfalto y
+                        Aceras / Contenes</h3>
+                </div>
+                <button type="button" class="btn-close-modal" aria-label="Cerrar modal">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="civiles-grid-modal">
+                    <!-- Asfalto Colocado -->
+                    <div class="civ-block">
+                        <h3>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M3 21h18"></path>
+                                <path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"></path>
+                            </svg>
+                            Plan de Asfalto Colocado
+                        </h3>
+                        <div class="civ-stats-list">
+                            <div class="civ-stat-item">
+                                <span>Metros Cuadrados (M²):</span>
+                                <strong id="civAsfaltoM2">1,468,976.69 m²</strong>
+                            </div>
+                            <div class="civ-stat-item">
+                                <span>Longitud Intervenida (KM):</span>
+                                <strong id="civAsfaltoKm">262.21 km</strong>
+                            </div>
+                            <div class="civ-stat-item">
+                                <span>Metros Cúbicos (M³):</span>
+                                <strong id="civAsfaltoM3">91,829.18 m³</strong>
+                            </div>
+                            <div class="civ-stat-item">
+                                <span>Sectores Beneficiados:</span>
+                                <strong id="civAsfaltoSectores">129 sectores</strong>
+                            </div>
+                            <div class="civ-stat-item">
+                                <span>Inversión Total Ejecutada:</span>
+                                <strong id="civAsfaltoInv">RD$ 2,249,814,910.00</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Aceras y Contenes -->
+                    <div class="civ-block">
+                        <h3>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                            </svg>
+                            Programa Nacional de Aceras y Contenes
+                        </h3>
+                        <div class="civ-stats-list">
+                            <div class="civ-stat-item">
+                                <span>Aceras Construidas:</span>
+                                <strong id="civAcerasM2">21,372.68 M2</strong>
+                            </div>
+                            <div class="civ-stat-item">
+                                <span>Contenes Construidos:</span>
+                                <strong id="civContenesMl">19,912.60 ML</strong>
+                            </div>
+                            <div class="civ-stat-item">
+                                <span>Longitud Total:</span>
+                                <strong id="civAcerasKm">19.9 KM</strong>
+                            </div>
+                            <div class="civ-stat-item">
+                                <span>Inversión en el Programa:</span>
+                                <strong id="civAcerasInv">RD$ 41,574,542.64</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scheduled paving table -->
+                <div class="civ-block" style="margin-top: 10px;">
+                    <h3>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 14 14"></polyline>
+                        </svg>
+                        Asfalto Programado &bull; 1er. Trimestre 2025 (21.50 KM)
+                    </h3>
+                    <table class="civ-prog-table">
+                        <thead>
+                            <tr>
+                                <th>Sector / Eje Vial</th>
+                                <th>Municipio</th>
+                                <th>Longitud Proyectada</th>
+                            </tr>
+                        </thead>
+                        <tbody id="progAsfaltoTableBody">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <span class="fuente-footer">Fuente: Obras Civiles y Programas Especiales MOPC La Vega (Slide 16, 17,
+                    18).</span>
+                <button type="button" class="btn btn-secondary btn-sm btn-close-modal">Cerrar</button>
+            </div>
+        </div>
+    </dialog>
+
+    <!-- Institutional Footer -->
+    <footer class="footer-main" role="contentinfo">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 14px;">
+                        <img src="favicons/apple-touch-icon.png" alt="Logo Gobierno Dominicano"
+                            style="width: 44px; height: 44px; object-fit: contain; background: #FFFFFF; border-radius: 8px; padding: 4px;">
+                        <div>
+                            <h3 style="margin-bottom: 2px;">Ministerio de Obras Públicas y Comunicaciones</h3>
+                            <span style="font-size: 0.8125rem; color: rgba(255, 255, 255, 0.7);">Gobierno de la
+                                República Dominicana</span>
+                        </div>
+                    </div>
+                    <p>
+                        Plataforma oficial de transparencia e información pública sobre las obras viales, puentes,
+                        drenajes y proyectos de infraestructura desarrollados en la provincia de La Vega, República
+                        Dominicana.
+                    </p>
+                </div>
+                <div class="footer-col">
+                    <h4>Datasets Oficiales</h4>
+                    <ul class="footer-links">
+                        <li><span>&bull; Obras Terminadas (34 registros)</span></li>
+                        <li><span>&bull; Obras en Ejecución (13 registros)</span></li>
+                        <li><span>&bull; Obras Civiles y Asfalto Colocado</span></li>
+                        <li><span>&bull; Archivo Fuente: MOPC Enero 2025</span></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Institución</h4>
+                    <ul class="footer-links">
+                        <li><a href="https://www.mopc.gob.do" target="_blank" rel="noopener noreferrer">Portal Web
+                                MOPC</a></li>
+                        <li><a href="https://transparencia.gob.do" target="_blank" rel="noopener noreferrer">Portal de
+                                Transparencia</a></li>
+                        <li><span>Gobierno de la República Dominicana</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <span>&copy; 2025 Ministerio de Obras Públicas y Comunicaciones (MOPC) &bull; República
+                    Dominicana.</span>
+                <span>Desarrollado con estándares web abiertos (Vanilla HTML5 / CSS3 / JavaScript).</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Libraries via CDN: Chart.js & Leaflet -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <!-- Core Modular Application Scripts -->
+    <script src="js/data.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/filters.js"></script>
+    <script src="js/table.js"></script>
+    <script src="js/modal.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>

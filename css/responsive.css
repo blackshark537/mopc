@@ -1,0 +1,247 @@
+/* ==========================================================================
+   Responsive Stylesheet for MOPC La Vega Dashboard
+   Breakpoints: 1200px, 992px, 768px, 480px
+   ========================================================================== */
+
+/* Laptop / Medium Desktops (max-width: 1200px) */
+@media (max-width: 1200px) {
+    .kpis-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .kpis-secondary-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .filter-controls-grid {
+        grid-template-columns: 2fr 1fr 1fr 1fr auto;
+    }
+
+    .filter-controls-grid .filter-checkbox-wrap {
+        grid-column: span 2;
+    }
+}
+
+/* Tablet (max-width: 992px) */
+@media (max-width: 992px) {
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .gran-total-banner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+        padding: 20px 24px;
+    }
+
+    .gran-total-pills {
+        width: 100%;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .kpis-secondary-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .filter-controls-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+    }
+
+    .filter-controls-grid .filter-group:first-child {
+        grid-column: span 2;
+    }
+
+    .filter-controls-grid .filter-checkbox-wrap {
+        grid-column: span 1;
+    }
+
+    .modal-metrics-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .civiles-grid-modal {
+        grid-template-columns: 1fr;
+    }
+
+    .footer-content {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* Mobile Devices (max-width: 768px) */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 16px;
+    }
+
+    .header-main {
+        padding: 16px 0;
+    }
+
+    .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .header-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .mopc-logo-badge {
+        width: 44px;
+        height: 44px;
+    }
+
+    .brand-titles h1 {
+        font-size: 1.25rem;
+    }
+
+    .gran-total-amount {
+        font-size: 1.75rem;
+    }
+
+    .kpis-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .filter-controls-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .filter-controls-grid .filter-group:first-child {
+        grid-column: span 1;
+    }
+
+    .map-container {
+        height: 320px;
+    }
+
+    .chart-canvas-wrap {
+        height: 240px;
+    }
+
+    /* Convert Table to Card Feed on Mobile */
+    .mopc-table thead {
+        display: none;
+    }
+
+    .mopc-table, .mopc-table tbody, .mopc-table tr, .mopc-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .mopc-table tbody tr {
+        margin-bottom: 16px;
+        background: #FFFFFF;
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-xs);
+        padding: 16px;
+    }
+
+    .mopc-table td {
+        padding: 6px 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #F1F5F9;
+    }
+
+    .mopc-table td:last-child {
+        border-bottom: none;
+        padding-top: 10px;
+    }
+
+    .col-foto {
+        width: 100%;
+        margin-bottom: 8px;
+    }
+
+    .col-foto .thumb-cell {
+        width: 100%;
+        height: 140px;
+        border-radius: var(--radius-md);
+    }
+
+    .col-foto .thumb-cell.no-photo {
+        height: 60px;
+    }
+
+    .col-nombre {
+        max-width: 100%;
+    }
+
+    .col-inversion {
+        font-size: 1rem;
+    }
+
+    .action-buttons-wrap {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .btn-table-view {
+        width: 100%;
+        padding: 10px;
+        font-size: 0.875rem;
+    }
+
+    .modal-header {
+        padding: 18px 20px;
+    }
+
+    .modal-body {
+        padding: 18px 20px;
+    }
+
+    .modal-footer {
+        padding: 14px 20px;
+        flex-direction: column-reverse;
+        gap: 12px;
+        align-items: stretch;
+    }
+
+    .modal-footer-btns {
+        width: 100%;
+        justify-content: stretch;
+    }
+
+    .modal-footer-btns .btn {
+        flex: 1;
+    }
+
+    .footer-content {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+
+    .footer-bottom {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+}
+
+/* Small Smartphone (max-width: 480px) */
+@media (max-width: 480px) {
+    .brand-titles h1 {
+        font-size: 1.125rem;
+    }
+
+    .kpi-value {
+        font-size: 1.65rem;
+    }
+
+    .table-footer-bar {
+        flex-direction: column;
+        gap: 14px;
+        align-items: center;
+    }
+}
