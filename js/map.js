@@ -51,7 +51,7 @@ window.gm_authFailure = function () {
 };
 
 /**
- * Objeto MOPCMap — Controlador del Mapa en Google Maps
+ * Objeto MOPCMap — Controlador del Mapa en Google Maps y Street View 360°
  */
 window.MOPCMap = {
     map: null,
@@ -59,6 +59,10 @@ window.MOPCMap = {
     activeInfoWindow: null,
     hasInitialized: false,
     pendingObras: null,
+    streetViewService: null,
+    svPanorama: null,
+    currentSvLocation: null,
+    currentSvHeading: 0,
 
     // Estilos personalizados para un aspecto institucional moderno y limpio
     mapStyles: [
@@ -155,8 +159,26 @@ window.MOPCMap = {
             zoomControl: true
         });
 
-        // Crear InfoWindow único reutilizable
-        this.activeInfoWindow = new google.maps.InfoWindow();
+        // Crear InfoWindow único reutilizable con ancho máximo holgado
+        this.activeInfoWindow = new google.maps.InfoWindow({
+            maxWidth: 320
+        });
+
+        // Cerrar Street View flotante si el usuario cierra el InfoWindow manualmente
+        google.maps.event.addListener(this.activeInfoWindow, 'closeclick', () => {
+            this.closeStreetView();
+        });
+
+        // Configurar botones del panel Street View flotante
+        const btnSvClose = document.getElementById('btnSvClose');
+        if (btnSvClose) {
+            btnSvClose.onclick = () => this.closeStreetView();
+        }
+
+        const btnSvExpand = document.getElementById('btnSvExpand');
+        if (btnSvExpand) {
+            btnSvExpand.onclick = () => this.expandStreetView();
+        }
 
         this.hasInitialized = true;
 
@@ -248,10 +270,11 @@ window.MOPCMap = {
         }
         this.markers = [];
 
-        // Cerrar InfoWindow activo si está abierto
+        // Cerrar InfoWindow activo y Street View si están abiertos
         if (this.activeInfoWindow) {
             this.activeInfoWindow.close();
         }
+        this.closeStreetView();
 
         const geoObras = filteredObras.filter(o => o.coordenadas && o.coordenadas.lat && o.coordenadas.lon);
         const noticeEl = document.getElementById('mapNotice');
@@ -306,7 +329,7 @@ window.MOPCMap = {
     },
 
     /**
-     * Abre la ventana de información (InfoWindow) para una obra
+     * Abre la ventana de información (InfoWindow) para una obra y consulta Street View
      */
     openInfoWindow(marker, obra) {
         if (!this.activeInfoWindow || !this.map) return;
@@ -319,7 +342,10 @@ window.MOPCMap = {
             <div class="mopc-map-popup">
                 ${fotoHtml}
                 <div class="popup-body">
-                    <span class="badge ${obra.estado === 'Terminada' ? 'badge-success' : 'badge-primary'}">${obra.estado}</span>
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 3px;">
+                        <span class="badge ${obra.estado === 'Terminada' ? 'badge-success' : 'badge-primary'}">${obra.estado}</span>
+                        <span id="popupSvBadge"></span>
+                    </div>
                     <h4 class="popup-title">${obra.nombre}</h4>
                     <div class="popup-meta">
                         <span class="popup-inv">${obra.inversion_formateada}</span>
@@ -334,10 +360,114 @@ window.MOPCMap = {
 
         this.activeInfoWindow.setContent(popupContent);
         this.activeInfoWindow.open(this.map, marker);
+
+        // Consultar y activar Street View automáticamente si está disponible
+        if (obra.coordenadas && obra.coordenadas.lat && obra.coordenadas.lon) {
+            this.checkAndShowStreetView(obra.coordenadas.lat, obra.coordenadas.lon, obra);
+        }
     },
 
     /**
-     * Enfoca suavemente una obra en el mapa y abre su ficha emergente
+     * Verifica la disponibilidad de Street View para las coordenadas dadas y despliega el visor
+     */
+    checkAndShowStreetView(lat, lon, obra) {
+        if (!window.google || !google.maps) return;
+
+        if (!this.streetViewService) {
+            this.streetViewService = new google.maps.StreetViewService();
+        }
+
+        const pos = new google.maps.LatLng(lat, lon);
+
+        // Buscar panorama en un radio de 250 metros
+        this.streetViewService.getPanorama({
+            location: pos,
+            radius: 250,
+            source: google.maps.StreetViewSource.DEFAULT
+        }, (data, status) => {
+            const panel = document.getElementById('streetViewPanel');
+            const nameEl = document.getElementById('svObraName');
+            const svContainer = document.getElementById('streetViewContainer');
+            const badgeEl = document.getElementById('popupSvBadge');
+
+            if (status === google.maps.StreetViewStatus.OK && data && data.location) {
+                console.log('[MOPCMap] Street View disponible para:', obra.nombre);
+
+                if (nameEl) nameEl.textContent = obra.nombre;
+                if (panel) panel.classList.remove('hidden');
+
+                if (badgeEl) {
+                    badgeEl.innerHTML = `<span class="badge badge-success" style="font-size: 0.65rem; padding: 2px 6px;">📷 360° Activo</span>`;
+                }
+
+                this.currentSvLocation = data.location.latLng;
+
+                // Calcular orientación hacia las coordenadas del proyecto
+                let heading = 0;
+                if (google.maps.geometry && google.maps.geometry.spherical) {
+                    heading = google.maps.geometry.spherical.computeHeading(data.location.latLng, pos);
+                }
+                this.currentSvHeading = heading;
+
+                // Crear o actualizar StreetViewPanorama
+                if (!this.svPanorama && svContainer) {
+                    this.svPanorama = new google.maps.StreetViewPanorama(svContainer, {
+                        position: data.location.latLng,
+                        pov: { heading: heading, pitch: 0 },
+                        zoom: 1,
+                        enableCloseButton: false,
+                        addressControl: false,
+                        fullscreenControl: false,
+                        motionTracking: false,
+                        linksControl: true,
+                        panControl: true
+                    });
+                } else if (this.svPanorama) {
+                    this.svPanorama.setPosition(data.location.latLng);
+                    this.svPanorama.setPov({ heading: heading, pitch: 0 });
+                }
+            } else {
+                console.log('[MOPCMap] Street View no disponible en este punto:', obra.nombre);
+                if (panel) panel.classList.add('hidden');
+                if (badgeEl) {
+                    badgeEl.innerHTML = `<span class="badge badge-neutral" style="font-size: 0.65rem; opacity: 0.75; padding: 2px 6px;">Sin Street View</span>`;
+                }
+            }
+        });
+    },
+
+    /**
+     * Expande Street View a pantalla completa usando el Street View nativo del mapa
+     */
+    expandStreetView() {
+        if (!this.map || !this.currentSvLocation) return;
+
+        const mapStreetView = this.map.getStreetView();
+        mapStreetView.setPosition(this.currentSvLocation);
+        mapStreetView.setPov({ heading: this.currentSvHeading || 0, pitch: 0 });
+        mapStreetView.setVisible(true);
+
+        const panel = document.getElementById('streetViewPanel');
+        if (panel) panel.classList.add('hidden');
+
+        // Al salir de pantalla completa (flecha nativa de Google), volver a mostrar el panel si el mapa está visible
+        google.maps.event.addListenerOnce(mapStreetView, 'visible_changed', () => {
+            if (!mapStreetView.getVisible() && panel) {
+                panel.classList.remove('hidden');
+            }
+        });
+    },
+
+    /**
+     * Cierra el visor de Street View flotante
+     */
+    closeStreetView() {
+        const panel = document.getElementById('streetViewPanel');
+        if (panel) panel.classList.add('hidden');
+    },
+
+    /**
+     * Enfoca suavemente una obra en el mapa y abre su ficha emergente y Street View
      */
     focusObra(lat, lon, obraId) {
         if (!this.map || !lat || !lon) return;
@@ -352,7 +482,7 @@ window.MOPCMap = {
         this.map.panTo(targetPos);
         this.map.setZoom(15);
 
-        // Abrir InfoWindow del marcador correspondiente
+        // Abrir InfoWindow y Street View del marcador correspondiente
         setTimeout(() => {
             const item = this.markers.find(m => m.obraId === obraId || (
                 Math.abs(m.lat - lat) < 0.0001 &&

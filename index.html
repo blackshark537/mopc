@@ -445,8 +445,34 @@
                 </div>
             </div>
 
-            <!-- Google Maps Container -->
-            <div id="mapContainer" class="map-container"></div>
+            <!-- Google Maps & Street View Wrapper -->
+            <div class="map-wrapper-relative">
+                <div id="mapContainer" class="map-container"></div>
+
+                <!-- Floating Street View Panel (Activo automáticamente cuando está disponible) -->
+                <div id="streetViewPanel" class="streetview-panel hidden" aria-label="Visor Street View 360 grados">
+                    <div class="streetview-header">
+                        <div class="streetview-title-wrap">
+                            <span class="streetview-badge">Street View 360°</span>
+                            <span class="streetview-obra-name" id="svObraName">Proyecto MOPC</span>
+                        </div>
+                        <div class="streetview-actions">
+                            <button type="button" class="btn-sv-action" id="btnSvExpand" title="Ampliar a pantalla completa">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                                    <polyline points="15 3 21 3 21 9"></polyline>
+                                    <polyline points="9 21 3 21 3 15"></polyline>
+                                    <line x1="21" y1="3" x2="14" y2="10"></line>
+                                    <line x1="3" y1="21" x2="10" y2="14"></line>
+                                </svg>
+                            </button>
+                            <button type="button" class="btn-sv-action" id="btnSvClose" title="Cerrar Street View">
+                                &times;
+                            </button>
+                        </div>
+                    </div>
+                    <div id="streetViewContainer" class="streetview-canvas"></div>
+                </div>
+            </div>
         </section>
 
         <!-- Public Works Catalog Table Section -->
